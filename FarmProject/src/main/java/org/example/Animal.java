@@ -12,13 +12,13 @@ public class Animal extends Entity {
         this.species = species;
         this.acceptableCropTypes = acceptableCropTypes;
     }
+
     @Override
     public String getDescription() {
-        String description = super.getId() + "," + name + "," + species + ",";
+        String description = super.getId() + "," + super.getName() + "," + species + ",";
         for (String crop : acceptableCropTypes) {
-            description = description + crop + ",";
+            description = description + "@" + crop;
         }
-        description = description.substring(0,description.length()-1); // Removes "," at the end.
         return description;
     }
     public void feed(Crop crop) {

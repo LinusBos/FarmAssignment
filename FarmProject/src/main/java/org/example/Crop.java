@@ -19,12 +19,17 @@ public class Crop extends Entity {
 
     @Override
     public String getDescription() {
-        String description = super.getId() + "," + name + "," + cropType + "," + quantity;
+        String description = super.getId() + "," + super.getName() + "," + cropType + "," + quantity;
         return description;
     }
     public void addCrop (int amount) {
         quantity = quantity + amount;
     }
+
+    /**
+     * @param amount to reduce the current quantity.
+     * @return true if argument >= quantity, else false.
+     */
     public boolean takeCrop(int amount) {
         if (quantity >= amount) {
             quantity = quantity - amount;
