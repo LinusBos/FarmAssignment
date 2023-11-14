@@ -1,19 +1,24 @@
 package org.example;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Farm {
     private CropManager cropManager = new CropManager();
     private AnimalManager animalManager = new AnimalManager();
 
+    private File crops, animals;
+
 
     public Farm(){
         // should load the files that have been saved from last session
         // hint: file.exists()
 
-        File crops = new File("src/main/resources/cropsData.csv");
+        crops = new File("src/main/resources/cropsData.txt");
         if(crops.exists()) {
             System.out.println("crops file exists!");
 
@@ -26,7 +31,7 @@ public class Farm {
                 throw new RuntimeException(e);
             }
         }
-        File animals = new File("src/main/resources/animalsData.csv");
+        animals = new File("src/main/resources/animalsData.txt");
         if(animals.exists()) {
             System.out.println("animal file exists");
         }
@@ -38,6 +43,13 @@ public class Farm {
                 throw new RuntimeException(e);
             }
         }
+        /*
+        * FileReader fr = new FileReader(file);
+        * BufferedReader br = new BufferedReader(fr);
+        * String string = br.readLine();
+        * while(!line=null)
+        *
+        */
     }
 
     public void mainMenu() {
@@ -81,6 +93,29 @@ public class Farm {
     private void save() {
         // TODO save files to csv-file.
         // TODO calls animalManager.getAnimals() and cropManager.getCrops()
+        ArrayList<Animal> animalList = animalManager.getAnimals();
+        ArrayList<Crop> cropList = cropManager.getCrops();
+        try {
+            FileWriter fileWriter = new FileWriter(animals,true);
+            BufferedWriter bw = new BufferedWriter(fileWriter);
+            for (Animal animal : animalList) {
+                bw.write(animal.getDescription());
+            }
+
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            FileWriter fileWriter = new FileWriter(crops,true);
+            BufferedWriter bw = new BufferedWriter(fileWriter);
+            for (Crop crop : cropList) {
+                bw.write(crop.getDescription());
+            }
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
