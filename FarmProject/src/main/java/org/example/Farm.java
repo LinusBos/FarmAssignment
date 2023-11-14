@@ -96,13 +96,13 @@ public class Farm {
         ArrayList<Animal> animalList = animalManager.getAnimals();
         ArrayList<Crop> cropList = cropManager.getCrops();
         try {
-            FileWriter fileWriter = new FileWriter(animals,true);
+            FileWriter fileWriter = new FileWriter(animals);
             BufferedWriter bw = new BufferedWriter(fileWriter);
             for (Animal animal : animalList) {
                 bw.write(animal.getDescription());
             }
 
-            fileWriter.close();
+            bw.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -112,7 +112,7 @@ public class Farm {
             for (Crop crop : cropList) {
                 bw.write(crop.getDescription());
             }
-            fileWriter.close();
+            bw.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
