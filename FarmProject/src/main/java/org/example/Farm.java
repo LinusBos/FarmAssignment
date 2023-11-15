@@ -1,27 +1,48 @@
 package org.example;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Farm {
-    private CropManager cropManager = new CropManager();
+    private CropManager cropManager;
     private AnimalManager animalManager = new AnimalManager();
 
     private File crops, animals;
+    private ArrayList<Crop> cropList = new ArrayList<>();
+    private ArrayList<Animal> animalList;
 
 
-    public Farm(){
+    public Farm() {
         // should load the files that have been saved from last session
         // hint: file.exists()
-
         crops = new File("src/main/resources/cropsData.txt");
         if(crops.exists()) {
             System.out.println("crops file exists!");
+            FileReader fr = null;
+            int cropId;
+            String cropName;
+            String cropType;
+            int quantity;
+            String[] values;
+            try {
+                fr = new FileReader(crops);
+                BufferedReader br = new BufferedReader(fr);
+                while (br.readLine()!=null) {
+                    String description = br.readLine();
+                    values = description.split(",");
+                    cropId = Integer.parseInt(values[0]);
+                    cropName = values[1];
+                    cropType = values[2];
+                    quantity = Integer.parseInt(values[3]);
+                    Crop crop = new Crop(cropId, cropName, cropType, quantity);
+                    cropList.add(crop);
+                }
+            } catch (FileNotFoundException e) {
 
+            } catch (IOException e) {
+                System.out.println("Problem with bufferedReader.");
+            }
         }
         else {
             System.out.println("crops doesn't exists!");
@@ -34,6 +55,14 @@ public class Farm {
         animals = new File("src/main/resources/animalsData.txt");
         if(animals.exists()) {
             System.out.println("animal file exists");
+            FileReader fr = null;
+            try {
+                fr = new FileReader(animals);
+                BufferedReader br = new BufferedReader(fr);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
         }
         else {
             System.out.println("animal file doesn't exists");
@@ -43,13 +72,9 @@ public class Farm {
                 throw new RuntimeException(e);
             }
         }
-        /*
-        * FileReader fr = new FileReader(file);
-        * BufferedReader br = new BufferedReader(fr);
-        * String string = br.readLine();
-        * while(!line=null)
-        *
-        */
+
+
+
     }
 
     public void mainMenu() {
@@ -93,10 +118,10 @@ public class Farm {
     private void save() {
         // TODO save files to csv-file.
         // TODO calls animalManager.getAnimals() and cropManager.getCrops()
-        ArrayList<Animal> animalList = animalManager.getAnimals();
-        ArrayList<Crop> cropList = cropManager.getCrops();
+        animalList = animalManager.getAnimals();
+        cropList = cropManager.getCrops();
         try {
-            FileWriter fileWriter = new FileWriter(animals);
+            FileWriter fileWriter = new FileWriter(animals, true);
             BufferedWriter bw = new BufferedWriter(fileWriter);
             for (Animal animal : animalList) {
                 bw.write(animal.getDescription());
