@@ -15,7 +15,7 @@ public class Animal extends Entity {
 
     @Override
     public String getDescription() {
-        String description = super.getId() + "," + super.getName() + "," + species + ",";
+        String description = "," + super.getName() + "," + species + ",";
         for (String crop : acceptableCropTypes) {
             description = description + "@" + crop;
         }
@@ -24,12 +24,14 @@ public class Animal extends Entity {
     public void feed(Crop crop) {
         // check if crop is accepted
         // decrease quantity if it's possible to feed.
-        if (acceptableCropTypes.contains(crop.getName())) {
+        if (acceptableCropTypes.contains(crop.getCropType())) {
             if(crop.takeCrop(1)) {
                 System.out.println("Animal feed");
             } else {
                 System.out.println("Not enough quantity of " + crop.getName());
             }
+        } else {
+            System.out.println("This animal can't eat this type of crop.");
         }
 
     }
@@ -41,4 +43,7 @@ public class Animal extends Entity {
         this.species = species;
     }
 
+    public ArrayList<String> getAcceptableCropTypes() {
+        return acceptableCropTypes;
+    }
 }

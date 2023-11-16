@@ -46,6 +46,12 @@ public class CropManager {
 
     }
     private void viewCrops() {
+        if (cropList.isEmpty()) {
+            System.out.println("There are no crops.");
+        }
+        for (Crop crop : cropList) {
+            System.out.println(crop.getId() + crop.getDescription());
+        }
 
     }
     private void addCrop() {
@@ -61,21 +67,48 @@ public class CropManager {
         } catch (NumberFormatException e) {
             System.out.println("Need to be a number e.g 1000");
         }
-        System.out.println("Please write the id of the crop: ");
-        int id = 0;
-        try{
-            id = Integer.parseInt(sc.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Need to be a number e.g 10");
-        }
         System.out.println("You want to make: " + nameCrop + " " + typeCrop + " " + quantity);
+        int id = 0;
+        if (!cropList.isEmpty()) {
+            id = cropList.size();
+        }
         Crop crop = new Crop(id, nameCrop, typeCrop, quantity);
         cropList.add(crop);
-        // Guess makes a new crop and add to list
+
 
     }
     private void removeCrop() {
+        viewCrops();
+        // input id of the crop to be removed.
+        if (!cropList.isEmpty()) {
+            int idChoice = 0;
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Please type the id of the crop to be removed.");
+            try {
+                idChoice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("The id should be a number e.g '10'");
+            }
 
+            // remove it from arraylist
+            boolean cropFound = false;
+            int index = 0;
+            for (Crop crop : cropList) {
+                if (crop.getId() == idChoice) {
+                    System.out.println("Crop found!");
+                    System.out.println("Data: " + crop.getDescription());
+                    System.out.println("Index in array: " + cropList.indexOf(crop));
+                    cropFound = true;
+                    index = cropList.indexOf(crop);
+
+                }
+            }
+            if (!cropFound) {
+                System.out.println("That crop can't be found!");
+            } else {
+                cropList.remove(index); // Moved remove outside of loop, otherwise it crashes on next iteration
+            }
+        }
     }
     public ArrayList<Crop> getCrops() {
         return cropList;

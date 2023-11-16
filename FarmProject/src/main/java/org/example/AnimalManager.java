@@ -5,6 +5,11 @@ import java.util.Scanner;
 
 public class AnimalManager {
     private ArrayList<Animal> animalList = new ArrayList<>();
+
+    public AnimalManager(ArrayList<Animal> animalList) {
+        this.animalList = animalList;
+    }
+
     public void animalMenu(ArrayList<Crop> cropList) {
         // menu to use to different class methods
         // cropList should come from cropManager.getCrops()
@@ -53,7 +58,7 @@ public class AnimalManager {
             System.out.println("There are no animals.");
         }
         for (Animal animal: animalList) {
-            System.out.println(animal.getDescription());
+            System.out.println(animal.getId() + animal.getDescription());
         }
     }
     private void addAnimal() {
@@ -64,7 +69,7 @@ public class AnimalManager {
         name = sc.nextLine();
         System.out.println("Please write the species of the animal: ");
         species = sc.nextLine();
-        System.out.println("Please write the crops this animal can eat (separate with space): ");
+        System.out.println("Please write the type of crops this animal can eat (separate with space): ");
         cropString = sc.nextLine();
         String[] stringArray = cropString.split(" ");
         ArrayList<String> acceptableCropTypes = new ArrayList<>();
@@ -72,21 +77,18 @@ public class AnimalManager {
             acceptableCropTypes.add(s);
         }
         System.out.println("You want to make: " + name + " " + species + " " + acceptableCropTypes);
-        System.out.println("Please give a number as ID: ");
+
         int id = 0;
-        try {
-            id = Integer.parseInt(sc.nextLine());
-        }catch (NumberFormatException e) {
-            System.out.println("That was not a number e.g '10'");
+        if(!animalList.isEmpty()) {
+            id = animalList.size();
         }
-        // For future work Id should be increased for each added animal.
+
         Animal animal = new Animal(id,name,species,acceptableCropTypes);
         animalList.add(animal);
     }
     private void removeAnimal() {
-        // prints all animals with viewAnimal()
         viewAnimal();
-        // input id of the animal to be removed
+        // input id of the animal to be removed.
         if (!animalList.isEmpty()) {
             int idChoice = 0;
             Scanner sc = new Scanner(System.in);
@@ -116,12 +118,44 @@ public class AnimalManager {
                 animalList.remove(index); // Moved remove outside of loop, otherwise it crashes on next iteration
             }
 
-            // TODO and the saved file.
-
         }
 
     }
-    private void feedAnimals(ArrayList<Crop> cropList) {}
+    private void feedAnimals(ArrayList<Crop> cropList) {
+        viewAnimal();
+        System.out.println("Please type the id of the animal you like to feed: ");
+        int idChoiceAnimal, idChoiceCrop;
+        boolean animalFound = false;
+        Scanner scanner = new Scanner(System.in);
+        try {
+            idChoiceAnimal = Integer.parseInt(scanner.nextLine());
+            for (Animal animal : animalList) {
+                if (idChoiceAnimal == animal.getId()) {
+                    animalFound = true;
+
+                    for (Crop crop : cropList) {
+                        System.out.println(crop.getId() + " " + crop.getName());
+                    }
+                    boolean cropFound = false;
+                    System.out.println("Please type the id of the crop you like to feed to the animal: ");
+                    idChoiceCrop = Integer.parseInt(scanner.nextLine());
+                    for (Crop crop : cropList) {
+                        if (crop.getId() == idChoiceCrop) {
+                            cropFound = true;
+                            animal.feed(crop);
+                        }
+                    }
+                    if (!cropFound) {
+                        System.out.println("The crop was not found.");
+                    }
+
+
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Needs to be a number, e.g 10");
+        }
+    }
     public ArrayList<Animal> getAnimals() {
         return animalList;
     }

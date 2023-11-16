@@ -1,1 +1,3 @@
-10,Kalle,Cow,@Carrot@Wheat
+0,Ros-Marie,Cow,@Forage
+1,Olle,Pig,@Vegetable
+2,Kerstin,Hen,@Seed

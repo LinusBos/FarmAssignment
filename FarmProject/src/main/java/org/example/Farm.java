@@ -6,39 +6,41 @@ import java.util.Scanner;
 
 public class Farm {
     private CropManager cropManager;
-    private AnimalManager animalManager = new AnimalManager();
+    private AnimalManager animalManager ;
 
     private File crops, animals;
     private ArrayList<Crop> cropList = new ArrayList<>();
-    private ArrayList<Animal> animalList;
+    private ArrayList<Animal> animalList = new ArrayList<>();
 
 
     public Farm() {
         // should load the files that have been saved from last session
         // hint: file.exists()
         crops = new File("src/main/resources/cropsData.txt");
+        animals = new File("src/main/resources/animalsData.txt");
+        int tempId;
+        String tempName;
+        String tempType;
+        int tempQuantity;
+        String[] values;
         if(crops.exists()) {
             System.out.println("crops file exists!");
             FileReader fr = null;
-            int cropId;
-            String cropName;
-            String cropType;
-            int quantity;
-            String[] values;
             try {
                 fr = new FileReader(crops);
                 BufferedReader br = new BufferedReader(fr);
-                while (br.readLine()!=null) {
-                    String description = br.readLine();
+                String description;
+                while ((description = br.readLine())!=null) {
                     values = description.split(",");
-                    cropId = Integer.parseInt(values[0]);
-                    cropName = values[1];
-                    cropType = values[2];
-                    quantity = Integer.parseInt(values[3]);
-                    Crop crop = new Crop(cropId, cropName, cropType, quantity);
+                    tempId = Integer.parseInt(values[0]);
+                    tempName = values[1];
+                    tempType = values[2];
+                    tempQuantity = Integer.parseInt(values[3]);
+                    Crop crop = new Crop(tempId, tempName, tempType, tempQuantity);
                     cropList.add(crop);
                 }
-            } catch (FileNotFoundException e) {
+                br.close();
+            } catch (FileNotFoundException f) {
 
             } catch (IOException e) {
                 System.out.println("Problem with bufferedReader.");
@@ -52,16 +54,36 @@ public class Farm {
                 throw new RuntimeException(e);
             }
         }
-        animals = new File("src/main/resources/animalsData.txt");
+
         if(animals.exists()) {
             System.out.println("animal file exists");
             FileReader fr = null;
             try {
                 fr = new FileReader(animals);
                 BufferedReader br = new BufferedReader(fr);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+                String description;
+                while ((description = br.readLine())!=null) {
+                    values = description.split(",");
+                    tempId = Integer.parseInt(values[0]);
+                    tempName = values[1];
+                    tempType = values[2];
+                    ArrayList<String> cropTypes = new ArrayList<>();
+                    String[] tempArray = values[3].split("@"); //cropsTypes seperated with '@'
+                    // tempArray[0] = " "
+                    for (int i = 1; i < tempArray.length; i++) {
+                        cropTypes.add(tempArray[i]);
+                    }
+                    Animal animal = new Animal(tempId, tempName, tempType, cropTypes);
+                    animalList.add(animal);
+                }
+                br.close();
+                } catch (FileNotFoundException e) {
+
+                } catch (IOException e) {
+                    System.out.println("Problem with bufferedReader.");
+                }
+            cropManager = new CropManager(cropList);
+            animalManager = new AnimalManager(animalList);
 
         }
         else {
@@ -120,24 +142,35 @@ public class Farm {
         // TODO calls animalManager.getAnimals() and cropManager.getCrops()
         animalList = animalManager.getAnimals();
         cropList = cropManager.getCrops();
+        int idCounter;
         try {
-            FileWriter fileWriter = new FileWriter(animals, true);
+            FileWriter fileWriter = new FileWriter(animals);
             BufferedWriter bw = new BufferedWriter(fileWriter);
+            idCounter = 0;
             for (Animal animal : animalList) {
-                bw.write(animal.getDescription());
+                String lineToFile = idCounter + animal.getDescription();
+                bw.write(lineToFile);
+                bw.newLine();
+                idCounter++;
             }
 
             bw.close();
+            System.out.println("Animals saved!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         try {
-            FileWriter fileWriter = new FileWriter(crops,true);
+            FileWriter fileWriter = new FileWriter(crops);
             BufferedWriter bw = new BufferedWriter(fileWriter);
+            idCounter = 0;
             for (Crop crop : cropList) {
-                bw.write(crop.getDescription());
+                String lineToFile = (idCounter) + crop.getDescription();
+                bw.write(lineToFile);
+                bw.newLine();
+                idCounter++;
             }
             bw.close();
+            System.out.println("Crops saved!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
