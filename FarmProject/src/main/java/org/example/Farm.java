@@ -14,8 +14,6 @@ public class Farm {
 
 
     public Farm() {
-        // should load the files that have been saved from last session
-        // hint: file.exists()
         crops = new File("src/main/resources/cropsData.txt");
         animals = new File("src/main/resources/animalsData.txt");
         int tempId;
@@ -24,7 +22,7 @@ public class Farm {
         int tempQuantity;
         String[] values;
         if(crops.exists()) {
-            System.out.println("crops file exists!");
+            //System.out.println("crops file exists!"); // use for bugchecks
             FileReader fr = null;
             try {
                 fr = new FileReader(crops);
@@ -43,20 +41,26 @@ public class Farm {
             } catch (FileNotFoundException f) {
 
             } catch (IOException e) {
-                System.out.println("Problem with bufferedReader.");
+                System.out.println("Problem with bufferedReader."); // Bugcheck
             }
         }
         else {
-            System.out.println("crops doesn't exists!");
+            //System.out.println("crops doesn't exists!"); //use for bugcheck
             try {
                 crops.createNewFile();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            Crop crop1 = new Crop(0,"Tomato","Vegetable",10);
+            cropList.add(crop1);
+            Crop crop2 = new Crop(1,"Carrot","Vegetable",5);
+            cropList.add(crop2);
+            Crop crop3 = new Crop(2,"Wheat","Grain",10);
+            cropList.add(crop3);
         }
 
         if(animals.exists()) {
-            System.out.println("animal file exists");
+            //System.out.println("animal file exists"); //use for bugcheck
             FileReader fr = null;
             try {
                 fr = new FileReader(animals);
@@ -69,10 +73,12 @@ public class Farm {
                     tempType = values[2];
                     ArrayList<String> cropTypes = new ArrayList<>();
                     String[] tempArray = values[3].split("@"); //cropsTypes seperated with '@'
-                    // tempArray[0] = " "
+
+                    // tempArray[0] is empty so starting from index 1.
                     for (int i = 1; i < tempArray.length; i++) {
                         cropTypes.add(tempArray[i]);
                     }
+
                     Animal animal = new Animal(tempId, tempName, tempType, cropTypes);
                     animalList.add(animal);
                 }
@@ -82,19 +88,30 @@ public class Farm {
                 } catch (IOException e) {
                     System.out.println("Problem with bufferedReader.");
                 }
-            cropManager = new CropManager(cropList);
-            animalManager = new AnimalManager(animalList);
-
         }
         else {
-            System.out.println("animal file doesn't exists");
+            // System.out.println("animal file doesn't exist"); // Bugcheck
             try {
                 animals.createNewFile();
+                ArrayList<String> food1 = new ArrayList<>();
+                ArrayList<String> food2 = new ArrayList<>();
+                ArrayList<String> food3 = new ArrayList<>();
+                food1.add("Forage");
+                food2.add("Vegetable");
+                food3.add("Seed");
+                Animal animal1 = new Animal(0,"Ros-Marie","Cow",food1);
+
+                Animal animal2 = new Animal(1,"Olle","Pig",food2);
+                Animal animal3 = new Animal(2,"Kerstin","Hen",food3);
+                animalList.add(animal1);
+                animalList.add(animal2);
+                animalList.add(animal3);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-
+        cropManager = new CropManager(cropList);
+        animalManager = new AnimalManager(animalList);
 
 
     }
@@ -102,6 +119,12 @@ public class Farm {
     public void mainMenu() {
         int choice = 0;
         while (choice != 4){
+            choice = 0;
+             /*
+            if correct input first iteration
+            but 2nd iteration gets wrong input and throws exception on parseInt,
+            choice would not be updated and the last value on choice will swap case.
+            */
             System.out.println("What would you like to do?");
             System.out.println("1. Manage crops");
             System.out.println("2. Manage animals");
@@ -138,17 +161,16 @@ public class Farm {
 
     }
     private void save() {
-        // TODO save files to csv-file.
-        // TODO calls animalManager.getAnimals() and cropManager.getCrops()
         animalList = animalManager.getAnimals();
         cropList = cropManager.getCrops();
         int idCounter;
         try {
+            //Reading Animals
             FileWriter fileWriter = new FileWriter(animals);
             BufferedWriter bw = new BufferedWriter(fileWriter);
             idCounter = 0;
             for (Animal animal : animalList) {
-                String lineToFile = idCounter + animal.getDescription();
+                String lineToFile = idCounter + animal.getCSV();
                 bw.write(lineToFile);
                 bw.newLine();
                 idCounter++;
@@ -160,11 +182,12 @@ public class Farm {
             throw new RuntimeException(e);
         }
         try {
+            //Reading Crops
             FileWriter fileWriter = new FileWriter(crops);
             BufferedWriter bw = new BufferedWriter(fileWriter);
             idCounter = 0;
             for (Crop crop : cropList) {
-                String lineToFile = (idCounter) + crop.getDescription();
+                String lineToFile = (idCounter) + crop.getCSV();
                 bw.write(lineToFile);
                 bw.newLine();
                 idCounter++;

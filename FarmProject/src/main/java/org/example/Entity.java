@@ -24,4 +24,5 @@ public abstract class Entity {
      * @return a string with the variables for the class separated with ",".
      */
     public abstract String getDescription();
+    public abstract String getCSV();
 }

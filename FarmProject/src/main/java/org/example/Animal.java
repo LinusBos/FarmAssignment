@@ -15,18 +15,27 @@ public class Animal extends Entity {
 
     @Override
     public String getDescription() {
-        String description = "," + super.getName() + "," + species + ",";
+        String description = "Id: " + super.getId() +" Name: "+ super.getName() + " Species: " + species + " \nAcceptable crops types:";
         for (String crop : acceptableCropTypes) {
-            description = description + "@" + crop;
+            description = description + " " + crop;
         }
         return description;
     }
+
+    @Override
+    public String getCSV() {
+        String descriptionCSV = "," + super.getName() + "," + species + ",";
+        for (String crop : acceptableCropTypes) {
+            descriptionCSV = descriptionCSV + "@" + crop;
+        }
+        return descriptionCSV;
+    }
+
     public void feed(Crop crop) {
-        // check if crop is accepted
-        // decrease quantity if it's possible to feed.
+
         if (acceptableCropTypes.contains(crop.getCropType())) {
             if(crop.takeCrop(1)) {
-                System.out.println("Animal feed");
+                System.out.println("The " + getSpecies() + " " + getName() + " eats " + crop.getName());
             } else {
                 System.out.println("Not enough quantity of " + crop.getName());
             }

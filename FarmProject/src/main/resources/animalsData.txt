@@ -1,3 +1,4 @@
 0,Ros-Marie,Cow,@Forage
 1,Olle,Pig,@Vegetable
 2,Kerstin,Hen,@Seed
+3,Felix,Chicken,@Vegetable@Grain

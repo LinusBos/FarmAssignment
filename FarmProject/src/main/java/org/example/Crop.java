@@ -19,9 +19,20 @@ public class Crop extends Entity {
 
     @Override
     public String getDescription() {
-        String description ="," + super.getName() + "," + cropType + "," + quantity;
+        String description ="Id: " + super.getId() +" Name: "+ super.getName() + " Crop type: " + cropType + " Quantity: " + quantity;
         return description;
     }
+
+    @Override
+    public String getCSV() {
+        String descriptionCSV ="," + super.getName() + "," + cropType + "," + quantity;
+        return descriptionCSV;
+    }
+
+    /**
+     *
+     * @param amount to increase the quantity with.
+     */
     public void addCrop (int amount) {
         quantity = quantity + amount;
     }

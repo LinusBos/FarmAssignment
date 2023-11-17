@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AnimalManager {
-    private ArrayList<Animal> animalList = new ArrayList<>();
+    private ArrayList<Animal> animalList;
 
     public AnimalManager(ArrayList<Animal> animalList) {
         this.animalList = animalList;
@@ -12,9 +12,15 @@ public class AnimalManager {
 
     public void animalMenu(ArrayList<Crop> cropList) {
         // menu to use to different class methods
-        // cropList should come from cropManager.getCrops()
+
         int choice = 0;
         while (choice != 5) {
+            choice = 0;
+            /*
+            if correct input first iteration
+            but 2nd iteration gets wrong input and throws exception on parseInt,
+            choice would not be updated and the last value on choice will swap case.
+            */
             System.out.println("What would you like to do?");
             System.out.println("1. View animals");
             System.out.println("2. Add animal");
@@ -58,7 +64,7 @@ public class AnimalManager {
             System.out.println("There are no animals.");
         }
         for (Animal animal: animalList) {
-            System.out.println(animal.getId() + animal.getDescription());
+            System.out.println(animal.getDescription());
         }
     }
     private void addAnimal() {
@@ -76,7 +82,7 @@ public class AnimalManager {
         for (String s: stringArray) {
             acceptableCropTypes.add(s);
         }
-        System.out.println("You want to make: " + name + " " + species + " " + acceptableCropTypes);
+        //System.out.println("You want to add: " + name + " " + species + " " + acceptableCropTypes); //for bugcheck
 
         int id = 0;
         if(!animalList.isEmpty()) {
@@ -84,6 +90,7 @@ public class AnimalManager {
         }
 
         Animal animal = new Animal(id,name,species,acceptableCropTypes);
+        System.out.println("Welcome " + name + " to the farm!");
         animalList.add(animal);
     }
     private void removeAnimal() {
@@ -91,70 +98,89 @@ public class AnimalManager {
         // input id of the animal to be removed.
         if (!animalList.isEmpty()) {
             int idChoice = 0;
+            boolean correctInput = false;
             Scanner sc = new Scanner(System.in);
-            System.out.println("Please type the id of the animal to be removed.");
-            try {
-                idChoice = Integer.parseInt(sc.nextLine());
-            }catch (NumberFormatException e) {
-                System.out.println("The id should be a number e.g '10'");
+            while(!correctInput) {
+                System.out.println("Please type the id of the animal to be removed.");
+                try {
+                    idChoice = Integer.parseInt(sc.nextLine());
+                    correctInput = true;
+                }catch (NumberFormatException e) {
+                    System.out.println("The id should be a number e.g. '10'");
+                }
             }
-
             // remove it from arraylist
             boolean animalFound = false;
             int index = 0;
             for (Animal animal:animalList) {
                 if (animal.getId() == idChoice) {
-                    System.out.println("Animal found!");
-                    System.out.println("Data: " + animal.getDescription());
-                    System.out.println("Index in array: " + animalList.indexOf(animal));
+                    System.out.println(animal.getName() + " the " + animal.getSpecies() + " has been removed.");
                     animalFound = true;
                     index = animalList.indexOf(animal);
-
+                    animalList.remove(index);
+                    return;
                 }
             }
             if (!animalFound) {
                 System.out.println("That animal can't be found!");
-            }else {
-                animalList.remove(index); // Moved remove outside of loop, otherwise it crashes on next iteration
             }
-
+        } else {
+            System.out.println("There are no animals.");
         }
-
     }
     private void feedAnimals(ArrayList<Crop> cropList) {
         viewAnimal();
-        System.out.println("Please type the id of the animal you like to feed: ");
         int idChoiceAnimal, idChoiceCrop;
         boolean animalFound = false;
+        boolean correctInput1 = false;
+        boolean correctInput2 = false;
         Scanner scanner = new Scanner(System.in);
-        try {
-            idChoiceAnimal = Integer.parseInt(scanner.nextLine());
-            for (Animal animal : animalList) {
-                if (idChoiceAnimal == animal.getId()) {
-                    animalFound = true;
-
-                    for (Crop crop : cropList) {
-                        System.out.println(crop.getId() + " " + crop.getName());
-                    }
-                    boolean cropFound = false;
-                    System.out.println("Please type the id of the crop you like to feed to the animal: ");
-                    idChoiceCrop = Integer.parseInt(scanner.nextLine());
-                    for (Crop crop : cropList) {
-                        if (crop.getId() == idChoiceCrop) {
-                            cropFound = true;
-                            animal.feed(crop);
+        while(!correctInput1){
+            System.out.println("Please type the id of the animal you like to feed: ");
+            try {
+                idChoiceAnimal = Integer.parseInt(scanner.nextLine());
+                correctInput1 = true;
+                for (Animal animal : animalList) {
+                    if (idChoiceAnimal == animal.getId()) {
+                        animalFound = true;
+                        for (Crop crop : cropList) {
+                            System.out.println(crop.getId() + " " + crop.getName());
                         }
-                    }
-                    if (!cropFound) {
-                        System.out.println("The crop was not found.");
-                    }
+                        boolean cropFound = false;
+                        while (!correctInput2) {
+                            System.out.println("Please type the id of the crop you like to feed to the animal: ");
+                            try {
+                                idChoiceCrop = Integer.parseInt(scanner.nextLine());
+                                correctInput2 = true;
+                                for (Crop crop : cropList) {
+                                    if (crop.getId() == idChoiceCrop) {
+                                        cropFound = true;
+                                        animal.feed(crop);
+                                        return;
+                                    }
+                                }
+                            } catch (NumberFormatException e2) {
+                                System.out.println("Needs to be a number e.g. 10");
+                            }
+
+                        }
+
+                        if (!cropFound) {
+                            System.out.println("The crop was not found.");
+                        }
 
 
+                    }
                 }
+                if (!animalFound) {
+                    System.out.println("This animal can't be found.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Needs to be a number, e.g. 10");
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Needs to be a number, e.g 10");
         }
+
+
     }
     public ArrayList<Animal> getAnimals() {
         return animalList;

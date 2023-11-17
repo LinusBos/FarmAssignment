@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CropManager {
-    private ArrayList<Crop> cropList = new ArrayList<>();
+    private ArrayList<Crop> cropList;
     private  Scanner sc;
     public CropManager(ArrayList cropList) {
         this.cropList = cropList;
@@ -12,6 +12,12 @@ public class CropManager {
     public void cropMenu() {
         int choice = 0;
         while (choice != 4) {
+            choice = 0;
+             /*
+            if correct input first iteration
+            but 2nd iteration gets wrong input and throws exception on parseInt,
+            choice would not be updated and the last value on choice will swap case.
+            */
             System.out.println("What would you like to do?");
             System.out.println("1. View crops");
             System.out.println("2. Add crop");
@@ -50,30 +56,72 @@ public class CropManager {
             System.out.println("There are no crops.");
         }
         for (Crop crop : cropList) {
-            System.out.println(crop.getId() + crop.getDescription());
+            System.out.println(crop.getDescription());
         }
 
     }
     private void addCrop() {
         sc = new Scanner(System.in);
-        System.out.println("Please write the name of the crop:");
-        String nameCrop = sc.nextLine();
-        System.out.println("Please write the type of the crop: ");
-        String typeCrop = sc.nextLine();
-        System.out.println("Please write the quantity of the crop: ");
-        int quantity = 0;
-        try{
-            quantity = Integer.parseInt(sc.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Need to be a number e.g 1000");
+        boolean correctInput1 = false;
+        boolean correctInput2 = false;
+        int tempId;
+        boolean idFound = false;
+        while (!correctInput1) {
+            System.out.println("Please write the id of the crop: ");
+            try {
+                tempId = Integer.parseInt(sc.nextLine());
+                correctInput1 = true;
+                for (Crop crop : cropList) {
+                    if (crop.getId() == tempId)
+                    {
+                        idFound = true;
+                        int quantityExisting = 0;
+                        while (!correctInput2) {
+                            System.out.println("Please write the quantity you like to add to " + crop.getName()+": ");
+                            try {
+                                quantityExisting = Integer.parseInt(sc.nextLine());
+                                correctInput2 = true;
+                            } catch (NumberFormatException nfe) {
+                                System.out.println("Needs to be a number e.g. 10");
+                            }
+                        }
+                        System.out.println("You add " + quantityExisting + " to " + crop.getName());
+                        crop.addCrop(quantityExisting);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Needs to be a number e.g. 10");
+            }
         }
-        System.out.println("You want to make: " + nameCrop + " " + typeCrop + " " + quantity);
-        int id = 0;
-        if (!cropList.isEmpty()) {
-            id = cropList.size();
+
+        if (!idFound) { // only if the id doesn't exist.
+            System.out.println("Please write the name of the crop:");
+            String nameCrop = sc.nextLine();
+            System.out.println("Please write the type of the crop: ");
+            String typeCrop = sc.nextLine();
+            System.out.println("Please write the quantity of the crop: ");
+            int quantity = 0;
+            correctInput1 = false;
+            while (!correctInput1) {
+                try{
+                    quantity = Integer.parseInt(sc.nextLine());
+                    correctInput1 = true;
+                } catch (NumberFormatException e) {
+                    System.out.println("Need to be a number e.g. 10");
+                }
+            }
+            System.out.println("You created: " + nameCrop + " " + typeCrop + " " + quantity);
+            int id = 0;
+            if (!cropList.isEmpty()) {
+                id = cropList.size();
+            }
+            Crop crop = new Crop(id, nameCrop, typeCrop, quantity);
+            cropList.add(crop);
         }
-        Crop crop = new Crop(id, nameCrop, typeCrop, quantity);
-        cropList.add(crop);
+
+
+
+
 
 
     }
@@ -87,7 +135,7 @@ public class CropManager {
             try {
                 idChoice = Integer.parseInt(sc.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("The id should be a number e.g '10'");
+                System.out.println("The id should be a number e.g. '10'");
             }
 
             // remove it from arraylist
@@ -95,9 +143,7 @@ public class CropManager {
             int index = 0;
             for (Crop crop : cropList) {
                 if (crop.getId() == idChoice) {
-                    System.out.println("Crop found!");
-                    System.out.println("Data: " + crop.getDescription());
-                    System.out.println("Index in array: " + cropList.indexOf(crop));
+                    System.out.println("Crop " + crop.getName() + " has been removed.");
                     cropFound = true;
                     index = cropList.indexOf(crop);
 
@@ -110,6 +156,11 @@ public class CropManager {
             }
         }
     }
+
+    /**
+     *
+     * @return arraylist with crops stored and recent added.
+     */
     public ArrayList<Crop> getCrops() {
         return cropList;
     }
